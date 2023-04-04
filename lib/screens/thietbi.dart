@@ -7,6 +7,7 @@ import 'package:mob_vietduc/widgets/drawer.dart';
 import 'package:mob_vietduc/constants/Theme.dart';
 import 'package:mob_vietduc/widgets/input.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class thietbi extends StatefulWidget {
   final Set<String> epcSetLienTuc;
@@ -40,6 +41,7 @@ class _thietbiState extends State<thietbi> {
   }
 
   getDataThietbi() async {
+    myList = [];
     final prefs = await SharedPreferences.getInstance();
     username = prefs.getString('username') ?? '';
     password = prefs.getString('password') ?? '';
@@ -49,23 +51,66 @@ class _thietbiState extends State<thietbi> {
       "Accept": "application/json",
       "Authorization": basicAuth,
     };
-    Uri _uri = Uri.parse(
-        'http://13.213.133.99/api/v1/search_read/product.template?db=demo&with_context={}&with_company=1&fields=["barcode","display_name","list_price","create_date","default_code","x_hang_san_xuat","x_ma_benh_vien","x_ma_hang","x_ten_nha_cung_cap","x_quy_canh_hang_hoa"]');
+    Uri _uri = Uri.parse('http://13.213.133.99/api/v1/custom/vattu?db=demo');
 
     http.Response response = await http.get(_uri, headers: headers);
-    myList = json.decode(response.body);
-    // thietbiList = myList.map((item) => item["barcode"]).toList();
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      dynamic myMap = json.decode(response.body)["result"];
+      myList = myMap;
+
+      for (int i = 0; i < myList.length; i++) {
+        if (myList[i]["x_co_so_dat"] > myList[i]["qty_available"]) {
+          myList[i]["x_bu_hang"] =
+              (myList[i]["x_co_so_dat"] - myList[i]["qty_available"])
+                  .toString();
+          putBuHang(myList[i]["id"], double.parse(myList[i]["x_bu_hang"]));
+        } else {
+          myList[i]["x_bu_hang"] = "0";
+          putBuHang(myList[i]["id"], double.parse(myList[i]["x_bu_hang"]));
+        }
+      }
+      myList.removeWhere((element) => element["x_bu_hang"] == 0);
+
+      myList.sort((a, b) =>
+          a["x_bu_hang"].toString().compareTo(b["x_bu_hang"].toString()));
+    } else {
+      myList = [];
+    }
+
     print("namnm06 ${_uri}");
     setState(() {
       ichoice = 'đóng';
     });
   }
 
+  Future<void> putBuHang(int ids, double x_bu_hang) async {
+    try {
+      String username = 'nammta@gmail.com';
+      String password = '123456';
+      String basicAuth =
+          'Basic ' + base64Encode(utf8.encode('$username:$password'));
+      var headers = {
+        "Accept": "application/json",
+        "Authorization": basicAuth,
+      };
+      Uri _uri = Uri.parse(
+          'http://13.213.133.99/api/v1/write/product.template?db=demo&ids=["${ids}"]&values={ "x_bu_hang": ${x_bu_hang}}&with_context={}&with_company=1');
+
+      http.Response response = await http.put(_uri, headers: headers);
+      print(response.statusCode);
+      print(response.body);
+      print("namnm06_2 ${_uri}");
+    } catch (error) {
+      print(error);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Thiết bị"),
+          title: Text("Vật tư"),
         ),
         backgroundColor: ArgonColors.bgColorScreen,
         drawer: ArgonDrawer(currentPage: "thietbi"),
@@ -108,15 +153,38 @@ class _thietbiState extends State<thietbi> {
                                   .contains(MaNoiBo.toLowerCase())) {
                                 return SizedBox.shrink();
                               }
+
                               return Card(
                                   // leading: CircleAvatar(
                                   //   backgroundImage: NetworkImage(pokemonList[index]["img"]),
                                   // ),
 
                                   child: ListTile(
-                                      title: Row(children: [
+                                      title: Column(children: [
                                         Text(myList[index]["barcode"]
                                             .toString()),
+                                        Row(
+                                          children: [
+                                            if (double.parse(myList[index]
+                                                    ["x_bu_hang"]) >
+                                                0)
+                                              IconButton(
+                                                icon: Icon(Icons.star,
+                                                    color: Colors.yellow),
+                                                onPressed: () {},
+                                              ),
+                                            Text('Bù hàng: '),
+                                            Text(
+                                                myList[index]["x_bu_hang"]
+                                                    .toString()
+                                                    .split(".")[0],
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.red)),
+                                            Text(' Cái'),
+                                          ],
+                                        ),
                                       ]),
                                       subtitle: Column(
                                         children: [
@@ -138,14 +206,15 @@ class _thietbiState extends State<thietbi> {
                                           ),
                                           Row(children: [
                                             Text('Ngày tạo:   '),
-                                            Text(myList[index]["create_date"]),
+                                            Text(myList[index]["create_date"]
+                                                .toString()),
                                           ]),
                                           Row(
                                             children: [
-                                              Text('Tên thiết bị: '),
+                                              Text('Tên vật tư: '),
                                               Expanded(
                                                 child: Text(
-                                                  myList[index]["display_name"]
+                                                  myList[index]["name"]
                                                       .toString(),
                                                   style: TextStyle(
                                                     fontSize: 16,
@@ -219,6 +288,21 @@ class _thietbiState extends State<thietbi> {
                                                     color: Colors.red)),
                                             Text('VNĐ'),
                                           ]),
+                                          Row(
+                                            children: [
+                                              Text('Trong kho: '),
+                                              Text(
+                                                  myList[index]["qty_available"]
+                                                      .toString()
+                                                      .split(".")[0],
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.red)),
+                                              Text(' Cái'),
+                                            ],
+                                          ),
                                         ],
                                       )));
                             },

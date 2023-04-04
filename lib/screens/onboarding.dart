@@ -2,10 +2,43 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:mob_vietduc/constants/Theme.dart';
+import 'package:mob_vietduc/screens/dieuchuyenhang.dart';
+import 'package:mob_vietduc/screens/scanqr.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mob_vietduc/screens/yeucaubaotri.dart';
 
-class Onboarding extends StatelessWidget {
+import 'package:mob_vietduc/screens/register.dart';
+
+class Onboarding extends StatefulWidget {
+  const Onboarding({Key key}) : super(key: key);
+
+  @override
+  State<Onboarding> createState() => _OnboardingState();
+}
+
+class _OnboardingState extends State<Onboarding> {
   var username;
+  var password;
+  @override
+  initState() {
+    setState(() {});
+    super.initState();
+    getData();
+
+    // Timer.periodic(Duration(seconds: 20), (timer) {
+    //   // Gọi hàm cập nhật dữ liệu mỗi khi thời gian đến
+    //   getDataThietbi();
+    // });
+  }
+
+  getData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      username = prefs.getString('username') ?? '';
+      password = prefs.getString('password') ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +78,19 @@ class Onboarding extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/register');
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => Register(),
+                        //   ),
+                        // );
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Register(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors

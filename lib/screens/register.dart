@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mob_vietduc/constants/Theme.dart';
+import 'package:mob_vietduc/screens/scanqr.dart';
 import 'package:mob_vietduc/screens/yeucaubaotri.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,7 +20,6 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  bool _checkboxValue = false;
   var username;
   var password;
   var temp;
@@ -49,7 +49,7 @@ class _RegisterState extends State<Register> {
     print("password ${password} ");
   }
 
-  checklogin() async {
+  Future<void> checklogin(String username, String password) async {
     String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$username:$password'));
     var headers = {
@@ -65,16 +65,16 @@ class _RegisterState extends State<Register> {
         "http://13.213.133.99/api/v1/session?db=demo&with_context=%7B%7D&with_company=1");
 
     http.Response response = await http.get(_uri, headers: headers);
-    Map<String, dynamic> result = json.decode(response.body);
-    temp = result["username"];
-    print("result ${result} ");
 
-    setState(() {
+    dynamic result = json.decode(response.body);
+    if (response.statusCode == 200) {
+      temp = result["username"];
+      print("result ${result} ");
       if (username == temp) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => yeucaubaotri(),
+            builder: (context) => scanqr(),
           ),
         );
         print("kiem tra ${temp} ");
@@ -84,7 +84,10 @@ class _RegisterState extends State<Register> {
         print("kiem tra lỗi ");
         Navigator.pushNamed(context, '/onboarding');
       }
-    });
+      setState(() {});
+    } else {
+      temp = [];
+    }
   }
 
   Widget build(BuildContext context) {
@@ -161,7 +164,7 @@ class _RegisterState extends State<Register> {
                                             username = _textControllerUser.text;
                                             password = _textControllerPass.text;
                                           });
-                                          checklogin();
+                                          checklogin(username, password);
                                         },
                                         style: ElevatedButton.styleFrom(
                                           foregroundColor: Colors

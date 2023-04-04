@@ -52,13 +52,18 @@ class _danhsachdieuchuyenState extends State<danhsachdieuchuyen> {
       "Authorization": basicAuth,
     };
     Uri _uri = Uri.parse(
-        'http://13.213.133.99/api/v1/search_read/stock.move?db=demo&with_context&with_company=1');
+        'http://13.213.133.99/api/v1/custom/danhsachdieuchuyen?db=demo');
 
     http.Response response = await http.get(_uri, headers: headers);
-    myList = json.decode(response.body);
-    // danhsachdieuchuyenList = myList.map((item) => item["barcode"]).toList();
-    print("namnm06 ${_uri}");
-    print("tempPickingId ${tempPickingId}");
+    if (response.statusCode == 200) {
+      dynamic myMap = json.decode(response.body)["result"];
+      myList = myMap;
+      // danhsachdieuchuyenList = myList.map((item) => item["barcode"]).toList();
+      print("namnm06 ${_uri}");
+      print("tempPickingId ${tempPickingId}");
+    } else {
+      myList = [];
+    }
     setState(() {
       ichoice = 'đóng';
     });
@@ -126,22 +131,22 @@ class _danhsachdieuchuyenState extends State<danhsachdieuchuyen> {
                                           title: Row(children: [
                                             Text(myList[index]["barcode"]
                                                 .toString()),
-                                            Text(
-                                              "     ID:  ",
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                            Text(
-                                              myList[index]["id"].toString(),
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.red,
-                                              ),
-                                            ),
+                                            // Text(
+                                            //   "     ID:  ",
+                                            //   style: TextStyle(
+                                            //     fontSize: 16,
+                                            //     fontWeight: FontWeight.bold,
+                                            //     color: Colors.red,
+                                            //   ),
+                                            // ),
+                                            // Text(
+                                            //   myList[index]["id"].toString(),
+                                            //   style: TextStyle(
+                                            //     fontSize: 16,
+                                            //     fontWeight: FontWeight.bold,
+                                            //     color: Colors.red,
+                                            //   ),
+                                            // ),
                                           ]),
                                           subtitle: Column(
                                             children: [

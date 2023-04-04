@@ -9,6 +9,8 @@ import 'package:mob_vietduc/constants/Theme.dart';
 import 'package:mob_vietduc/widgets/input.dart';
 import 'package:mob_vietduc/widgets/navbar.dart';
 import 'package:mob_vietduc/screens/scanqr.dart';
+import 'package:mob_vietduc/screens/hoatdongbaotri.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class yeucaubaotri extends StatefulWidget {
@@ -26,6 +28,7 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
   List<dynamic> myList = [];
   List<dynamic> myThieBi = [];
   String ichoice = 'đóng';
+
   List<dynamic> filteredList = [];
   List<String> stringList = [];
   List<String> epcList = [];
@@ -38,6 +41,8 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
   String tempSelect;
   TextEditingController _textController = TextEditingController();
   String NoiDung = 'sửa';
+  List<String> _statuses = ['New Request', 'In Progress', 'Repaired', 'Scrap'];
+  int state = 1;
   var username;
   var password;
   @override
@@ -50,26 +55,29 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
     getDataThietbi();
   }
 
-  // Future<String> getUsername() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     username = prefs.getString('username');
-  //   });
-  //   print("username yeucaubaotri ${username}");
-  //   return username ?? ''; // return empty string if username is null
-  // }
+  Future<void> putTrangThai(int ids, int status) async {
+    try {
+      String username = 'nammta@gmail.com';
+      String password = '123456';
+      String basicAuth =
+          'Basic ' + base64Encode(utf8.encode('$username:$password'));
+      var headers = {
+        "Accept": "application/json",
+        "Authorization": basicAuth,
+      };
+      Uri _uri = Uri.parse(
+          'http://13.213.133.99/api/v1/write/maintenance.request?db=demo&ids=["${ids}"]&values={ "stage_id": ${status}}&with_context={}&with_company=1');
 
-  // Future<String> getPassword() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     password = prefs.getString('password');
-  //   });
-  //   print("password ${password}");
-  //   return password ?? ''; // return empty string if username is null
-  // }
+      http.Response response = await http.put(_uri, headers: headers);
+      print(response.statusCode);
+      print(response.body);
+      print("namnm06_2 ${_uri}");
+    } catch (error) {
+      print(error);
+    }
+  }
 
-  getDatayeucaubaotri() async {
-    myList = [];
+  Future<void> getDatayeucaubaotri() async {
     final prefs = await SharedPreferences.getInstance();
     username = prefs.getString('username') ?? '';
     password = prefs.getString('password') ?? '';
@@ -82,25 +90,29 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
       "Accept": "application/json",
       "Authorization": basicAuth,
     };
-    Uri _uri = Uri.parse(
-        'http://13.213.133.99/api/v1/custom/YeuCauBaoTri?db=demo&with_context&with_company=1');
-    if (username != null) {
-      http.Response response = await http.get(_uri, headers: headers);
-      Map<String, dynamic> myMap = json.decode(response.body);
-      myList = myMap["result"];
-      // yeucaubaotriList = myList.map((item) => item["barcode"]).toList();
-      // print("namnm06 ${myList}");
-      print("namnm06 ${_uri}");
-      setState(() {
-        ichoice = 'đóng';
-        username = prefs.getString('username') ?? '';
-        password = prefs.getString('password') ?? '';
-      });
+    Uri _uri1 =
+        Uri.parse('http://13.213.133.99/api/v1/custom/YeuCauBaoTri?db=demo');
+
+    http.Response response = await http.get(_uri1, headers: headers);
+    if (response.statusCode == 200) {
+      print("_uri1 ${_uri1}");
+
+      // Map<String, dynamic> myMap = json.decode(response.body)["result"];
+      // myList = [];
+      // if (myMap != null) {
+      //   myList = myMap.values.toList().cast<dynamic>();
+      // }
+
+      dynamic myMap = json.decode(response.body)["result"];
+      myList = myMap;
+      print("myList ${myList}");
     } else {
-      setState(() {
-        ichoice = 'mở';
-      });
+      myList = [];
+      print("danh sach rong ${myList}");
     }
+    setState(() {
+      ichoice = 'đóng';
+    });
   }
 
   Future<void> postData(List<String> barcodeList) async {
@@ -163,58 +175,63 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
     }
   }
 
-  getDataThietbi() async {
-    String username = 'nammta@gmail.com';
-    String password = '123456';
-    String basicAuth =
-        'Basic ' + base64Encode(utf8.encode('$username:$password'));
-    var headers = {
-      "Accept": "application/json",
-      "Authorization": basicAuth,
-    };
-    Uri _uri =
-        Uri.parse('http://13.213.133.99/api/v1/custom/TrangThietBi?db=demo');
+  Future<void> getDataThietbi() async {
+    try {
+      String username = 'nammta@gmail.com';
+      String password = '123456';
+      String basicAuth =
+          'Basic ' + base64Encode(utf8.encode('$username:$password'));
+      var headers = {
+        "Accept": "application/json",
+        "Authorization": basicAuth,
+      };
+      Uri _uri =
+          Uri.parse('http://13.213.133.99/api/v1/custom/TrangThietBi?db=demo');
 
-    http.Response response = await http.get(_uri, headers: headers);
-    Map<String, dynamic> myMap1 = json.decode(response.body);
-    myThieBi = myMap1["result"];
-    // epcList = [
-    //   'E280117000000213900A68AF',
-    //   // 'E2801170000002139004E900',
-    //   // 'E28011700000021390005506',
-    //   // 'E280117000000213900490C8',
-    //   // 'E2801170000002139005026C',
-    //   // 'E2801170000002139002559C',
-    //   // 'E28011700000021390050D9E',
-    //   // 'E280117000000213900B5B4E',
-    //   // 'E28011700000021390033325',
-    //   // 'E28011700000021390042315'
-    // ];
-    epcList = [];
-    print("namnm06 ${_uri}");
+      http.Response response = await http.get(_uri, headers: headers);
+      dynamic myMap1 = json.decode(response.body)["result"];
+      myThieBi = myMap1;
+      // epcList = [
+      //   'E280117000000213900A68AF',
+      //   // 'E2801170000002139004E900',
+      //   // 'E28011700000021390005506',
+      //   // 'E280117000000213900490C8',
+      //   // 'E2801170000002139005026C',
+      //   // 'E2801170000002139002559C',
+      //   // 'E28011700000021390050D9E',
+      //   // 'E280117000000213900B5B4E',
+      //   // 'E28011700000021390033325',
+      //   // 'E28011700000021390042315'
+      // ];
 
-    List<String> dataList = widget.epcSetLienTuc
-        .toString()
-        .split(','); // tách chuỗi thành các phần tử
+      print("namnm06 ${_uri}");
+      if (widget.epcSetLienTuc != null) {
+        List<String> dataList = widget.epcSetLienTuc
+            .toString()
+            .split(','); // tách chuỗi thành các phần tử
 
-    for (String element in dataList) {
-      if (element.contains('EPC:')) {
-        epcList.add(element.substring(
-            5, 29)); // cắt chuỗi từ vị trí thứ 4 để lấy giá trị EPC
+        for (String element in dataList) {
+          if (element.contains('EPC:')) {
+            epcList.add(element.substring(
+                5, 33)); // cắt chuỗi từ vị trí thứ 4 để lấy giá trị EPC
+          }
+        }
+        print("namnm07 ${dataList}");
       }
+
+      // print("namnm08 ${myThieBi}");
+      print("namnm09 ${epcList}");
+
+      stringList = myThieBi
+          .where((element) => epcList.contains(element['barcode']))
+          .map((element) => element['display_name'].toString())
+          .toList();
+
+      print("namnm11 ${stringList}");
+    } catch (error) {
+      print(error);
+      Text('Đã xảy ra lỗi ! ${error}');
     }
-    print("namnm07 ${dataList}");
-    // print("namnm08 ${myThieBi}");
-    print("namnm09 ${epcList}");
-
-    stringList = myThieBi
-        .where((element) => epcList.contains(element['barcode']))
-        .map((element) => element['display_name'].toString())
-        .toList();
-
-    print("namnm11 ${stringList}");
-
-    // print("namnm10 ${productId}");
   }
 
   @override
@@ -315,7 +332,7 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
                         value: iselect ?? 'New Request',
                         items: <String>[
                           'New Request',
-                          'In Progres',
+                          'In Progress',
                           'Repaired',
                           'Scrap'
                         ].map((String value) {
@@ -325,9 +342,10 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
                           );
                         }).toList(),
                         onChanged: (selectDieuChuyen) {
+                          getDatayeucaubaotri();
                           print("selectDieuChuyen ${selectDieuChuyen}");
                           setState(() {
-                            iselect = selectDieuChuyen;
+                            iselect = selectDieuChuyen ?? 'New Request';
                           });
                         },
                       ),
@@ -346,42 +364,23 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
                                 }
                                 return GestureDetector(
                                     onTap: () {
-                                      getDataThietbi();
-                                      getDatayeucaubaotri();
+                                      // getDatayeucaubaotri();
                                       // Hàm xử lý sự kiện khi nhấn vào Card ở đây
                                       print(
                                           'Bạn đã nhấn vào Card với display_name là ${myList[index]["display_name"].toString()}');
-
-                                      // count = variantIds.length;
-                                      // if (count > 0) {
-                                      //   ScaffoldMessenger.of(context)
-                                      //       .showSnackBar(
-                                      //     SnackBar(
-                                      //       content: Column(
-                                      //         children: [
-                                      //           Text(
-                                      //               'Đã nhập dữ liệu vào ${myList[index]["display_name"]} !'),
-                                      //           Text('Số sản phẩm ${count}')
-                                      //         ],
-                                      //       ),
-                                      //       duration:
-                                      //           const Duration(seconds: 3),
-                                      //     ),
-                                      //   );
-                                      //   setState(() {
-                                      //     count = 0;
-                                      //   });
-                                      // } else {
-                                      //   ScaffoldMessenger.of(context)
-                                      //       .showSnackBar(
-                                      //     SnackBar(
-                                      //       content: Text(
-                                      //           'Chưa có dữ liệu thiết bị, bạn nhập lại'),
-                                      //       duration:
-                                      //           const Duration(seconds: 3),
-                                      //     ),
-                                      //   );
-                                      // }
+                                      // postPlan(
+                                      //     myList[index]["equipment_id"][0]);
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => hoatdongbaotri(
+                                              equipmentid: myList[index]
+                                                      ["equipment_id"][1]
+                                                  .toString(),
+                                              ID: myList[index]["equipment_id"]
+                                                  [0]),
+                                        ),
+                                      );
                                     },
                                     child: Card(
                                         child: ListTile(
@@ -392,44 +391,73 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.blue,
                                                   )),
-                                              Text(
-                                                  '    Tình trạng: ${myList[index]["stage_id"][1].toString()}',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.blue,
-                                                  )),
+                                              DropdownButton<String>(
+                                                value: myList[index]["stage_id"]
+                                                        [1]
+                                                    .toString(),
+                                                items: _statuses
+                                                    .map((String value) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: value,
+                                                    child: Text(value),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    myList[index]["stage_id"]
+                                                        [1] = newValue;
+                                                    if (newValue ==
+                                                        "New Request") {
+                                                      state = 1;
+                                                    } else if (newValue ==
+                                                        "In Progress") {
+                                                      state = 2;
+                                                    } else if (newValue ==
+                                                        "Repaired") {
+                                                      state = 3;
+                                                    } else if (newValue ==
+                                                        "Scrap") {
+                                                      state = 4;
+                                                    }
+                                                    putTrangThai(
+                                                        myList[index]["id"],
+                                                        state);
+                                                  });
+                                                },
+                                              ),
                                             ]),
                                             subtitle: Column(
                                               children: [
                                                 Row(children: [
                                                   Text('Ngày tạo:   '),
                                                   Text(myList[index]
-                                                          ["create_date"]
+                                                          ["request_date"]
                                                       .toString()),
                                                 ]),
-                                                Row(
-                                                  children: [
-                                                    Text('Tên yêu cầu: '),
-                                                    Expanded(
-                                                      child: Text(
-                                                        myList[index]["name"]
-                                                            .toString(),
-                                                        style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.blue,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                                // Row(
+                                                //   children: [
+                                                //     Text('Tên yêu cầu: '),
+                                                //     Expanded(
+                                                //       child: Text(
+                                                //         myList[index]["name"]
+                                                //             .toString(),
+                                                //         style: TextStyle(
+                                                //           fontSize: 16,
+                                                //           fontWeight:
+                                                //               FontWeight.bold,
+                                                //           color: Colors.blue,
+                                                //         ),
+                                                //       ),
+                                                //     ),
+                                                //   ],
+                                                // ),
                                                 Row(children: [
                                                   Text('Tên thiết bị:   '),
                                                   Expanded(
                                                     child: Text(
-                                                      myList[index][
-                                                              "equipment_id"][1]
+                                                      myList[index]
+                                                              ["equipment_id"]
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
@@ -453,31 +481,47 @@ class _yeucaubaotriState extends State<yeucaubaotri> {
                                                         color: Colors.blue,
                                                       )),
                                                 ]),
+                                                // Row(children: [
+                                                //   Text('Loại bảo trì:   '),
+                                                //   Text(
+                                                //       myList[index][
+                                                //               "maintenance_kind_id"]
+                                                //           .toString(),
+                                                //       style: TextStyle(
+                                                //         fontSize: 16,
+                                                //         fontWeight:
+                                                //             FontWeight.bold,
+                                                //         color: Colors.blue,
+                                                //       )),
+                                                // ]),
                                                 Row(children: [
-                                                  Text('Loại bảo trì:   '),
+                                                  Text('Người tạo:   '),
                                                   Text(
-                                                      myList[index][
-                                                              "maintenance_type"]
+                                                      myList[index]
+                                                              ["employee_id"]
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.bold,
-                                                        color: Colors.blue,
+                                                        color: Colors.green,
                                                       )),
                                                 ]),
                                                 Row(children: [
                                                   Text(
                                                       'Nhân viên kỹ thuật:   '),
-                                                  Text(
+                                                  Expanded(
+                                                    child: Text(
                                                       myList[index]["user_id"]
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.bold,
-                                                        color: Colors.red,
-                                                      )),
+                                                        color: Colors.blue,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ]),
                                               ],
                                             ))));

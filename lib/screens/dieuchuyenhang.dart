@@ -39,9 +39,13 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
   String NoiDung = '';
   var username;
   var password;
+  List<String> _statuses = ['draft', 'assigned', 'done'];
+
   @override
   initState() {
-    setState(() {});
+    setState(() {
+      count = 0;
+    });
     super.initState();
     getDatadieuchuyenhang();
     // getDataThietbi();
@@ -57,11 +61,16 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
       "Accept": "application/json",
       "Authorization": basicAuth,
     };
-    Uri _uri = Uri.parse(
-        'http://13.213.133.99/api/v1/search_read/stock.picking/0/0/date?db=demo&with_context&with_company=1');
+    Uri _uri =
+        Uri.parse('http://13.213.133.99/api/v1/custom/dieuchuyenhang?db=demo');
 
     http.Response response = await http.get(_uri, headers: headers);
-    myList = json.decode(response.body);
+    if (response.statusCode == 200) {
+      dynamic myMap = json.decode(response.body)["result"];
+      myList = myMap;
+    } else {
+      myList = [];
+    }
     // dieuchuyenhangList = myList.map((item) => item["barcode"]).toList();
     print("namnm06 ${_uri}");
     setState(() {
@@ -69,7 +78,30 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
     });
   }
 
-  Future<void> postData(List<String> barcodeList, int id) async {
+  Future<void> putTrangThai(int ids, String status) async {
+    try {
+      String username = 'nammta@gmail.com';
+      String password = '123456';
+      String basicAuth =
+          'Basic ' + base64Encode(utf8.encode('$username:$password'));
+      var headers = {
+        "Accept": "application/json",
+        "Authorization": basicAuth,
+      };
+      Uri _uri = Uri.parse(
+          'http://13.213.133.99/api/v1/write/stock.picking?db=demo&ids=["${ids}"]&values={ "state": "${status}"}&with_context={}&with_company=1');
+
+      http.Response response = await http.put(_uri, headers: headers);
+      print(response.statusCode);
+      print(response.body);
+      print("namnm06_2 ${_uri}");
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> postData(List<String> barcodeList, int id, int location_dest_id,
+      int location_id) async {
     try {
       String username = 'nammta@gmail.com';
       String password = '123456';
@@ -93,7 +125,7 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
       print("Gia tri stringList ${stringList}");
 
       var apiUrl =
-          'http://13.213.133.99/api/v1/create/stock.move?db=demo&ids=[9999]&values={"name":"","product_id":,"picking_id":${id},"location_id":4,"location_dest_id":8,"company_id":1, "product_uom_qty":1,"product_uom":1,"procure_method":"make_to_stock","barcode":""}';
+          'http://13.213.133.99/api/v1/create/stock.move?db=demo&ids=[9999]&values={"name":"","product_id":,"picking_id":${id},"location_id":${location_id},"location_dest_id":${location_dest_id},"company_id":1, "product_uom_qty":1,"product_uom":1,"procure_method":"make_to_stock","barcode":""}';
       for (var i = 0; i < variantIds.length; i++) {
         var productId = variantIds[i].replaceAll('[', '').replaceAll(']', '');
         var barcode = stringList[i];
@@ -118,7 +150,7 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
             duration: const Duration(seconds: 3),
           ),
         );
-        await Future.delayed(Duration(milliseconds: 500));
+        await Future.delayed(Duration(milliseconds: 100));
       }
     } catch (error) {
       print(error);
@@ -137,7 +169,7 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
         "Authorization": basicAuth,
       };
       Uri _uri = Uri.parse(
-          'http://13.213.133.99/api/v1/create/stock.picking?db=demo&ids=[30]&values={"picking_type_id":1,"move_type":"direct","location_id":"4","location_dest_id":"8","company_id":"1","state":"draft","x_so_hoa_don":"${x_so_hoa_don}"}');
+          'http://13.213.133.99/api/v1/create/stock.picking?db=demo&values={"picking_type_id":1,"move_type":"direct","location_id":"5","location_dest_id":"8","company_id":"1","state":"draft","x_so_hoa_don":"${x_so_hoa_don}"}');
 
       http.Response response = await http.post(_uri, headers: headers);
       print(response.statusCode);
@@ -159,7 +191,7 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
         "Authorization": basicAuth,
       };
       Uri _uri = Uri.parse(
-          'http://13.213.133.99/api/v1/create/stock.picking?db=demo&ids=[30]&values={"picking_type_id":2,"move_type":"direct","location_id":"4","location_dest_id":"8","company_id":"1","state":"draft"}');
+          'http://13.213.133.99/api/v1/create/stock.picking?db=demo&values={"picking_type_id":2,"move_type":"direct","location_id":"8","location_dest_id":"5","company_id":"1","state":"draft"}');
 
       http.Response response = await http.post(_uri, headers: headers);
       print(response.statusCode);
@@ -170,7 +202,7 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
     }
   }
 
-  getDataThietbi() async {
+  Future<void> getDataThietbi() async {
     String username = 'nammta@gmail.com';
     String password = '123456';
     String basicAuth =
@@ -183,33 +215,24 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
         'http://13.213.133.99/api/v1/search_read/product.template?db=demo&with_context&with_company=1&fields=["product_variant_ids","barcode"]');
 
     http.Response response = await http.get(_uri, headers: headers);
-    myThieBi = json.decode(response.body);
-    // epcList = [
-    //   'E280117000000213900A68AF',
-    //   'E2801170000002139004E900',
-    //   'E28011700000021390005506',
-    //   'E280117000000213900490C8',
-    //   'E2801170000002139005026C',
-    //   'E2801170000002139002559C',
-    //   'E28011700000021390050D9E',
-    //   'E280117000000213900B5B4E',
-    //   'E28011700000021390033325',
-    //   'E28011700000021390042315',
-    // ];
-    epcList = [];
+    dynamic myMap1 = json.decode(response.body);
+    myThieBi = myMap1;
+
     print("namnm06 ${_uri}");
 
-    List<String> dataList = widget.epcSetLienTuc
-        .toString()
-        .split(','); // tách chuỗi thành các phần tử
+    if (widget.epcSetLienTuc != null) {
+      List<String> dataList = widget.epcSetLienTuc
+          .toString()
+          .split(','); // tách chuỗi thành các phần tử
 
-    for (String element in dataList) {
-      if (element.contains('EPC:')) {
-        epcList.add(element.substring(
-            5, 29)); // cắt chuỗi từ vị trí thứ 4 để lấy giá trị EPC
+      for (String element in dataList) {
+        if (element.contains('EPC:')) {
+          epcList.add(element.substring(
+              5, 33)); // cắt chuỗi từ vị trí thứ 4 để lấy giá trị EPC
+        }
       }
+      print("namnm07 ${dataList}");
     }
-    print("namnm07 ${dataList}");
     print("namnm08 ${myThieBi}");
     print("namnm09 ${epcList}");
 
@@ -318,9 +341,10 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
                           );
                         }).toList(),
                         onChanged: (selectDieuChuyen) {
+                          getDatadieuchuyenhang();
                           print("selectDieuChuyen ${selectDieuChuyen}");
                           setState(() {
-                            iselect = selectDieuChuyen;
+                            iselect = selectDieuChuyen ?? 'draft';
                           });
                         },
                       ),
@@ -342,12 +366,15 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
                                       getDataThietbi();
                                       // Hàm xử lý sự kiện khi nhấn vào Card ở đây
                                       print(
-                                          'Bạn đã nhấn vào Card với id là ${myList[index]["id"]}');
-                                      postData(epcList, myList[index]["id"]);
+                                          'Bạn đã nhấn vào Card với id là ${myList[index]["location_dest_id"][0]} ${myList[index]["location_id"][0]} ${myList[index]["id"]}');
+                                      var dest_id =
+                                          myList[index]["location_dest_id"][0];
+                                      var location_id =
+                                          myList[index]["location_id"][0];
 
-                                      PickingID =
-                                          myList[index]["id"].toString();
-                                      print("PickingID ${PickingID}");
+                                      postData(epcList, myList[index]["id"],
+                                          dest_id, location_id);
+
                                       count = variantIds.length;
                                       if (count > 0) {
                                         ScaffoldMessenger.of(context)
@@ -362,18 +389,6 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
                                             ),
                                             duration:
                                                 const Duration(seconds: 3),
-                                          ),
-                                        );
-
-                                        setState(() {
-                                          count = 0;
-                                        });
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                danhsachdieuchuyen(
-                                                    picking_id: PickingID),
                                           ),
                                         );
                                       } else {
@@ -397,10 +412,59 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.blue,
                                                   )),
+                                              DropdownButton<String>(
+                                                value: myList[index]["state"]
+                                                    .toString(),
+                                                items: _statuses
+                                                    .map((String value) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: value,
+                                                    child: Text(value),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    if (newValue != null) {
+                                                      myList[index]["state"] =
+                                                          newValue;
+
+                                                      putTrangThai(
+                                                          myList[index]["id"],
+                                                          newValue);
+                                                    }
+                                                  });
+                                                },
+                                              ),
+                                              IconButton(
+                                                icon: Icon(
+                                                    Icons.move_down_rounded),
+                                                onPressed: () {
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          danhsachdieuchuyen(
+                                                              picking_id: myList[
+                                                                          index]
+                                                                      ["id"]
+                                                                  .toString()),
+                                                    ),
+                                                  );
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                          'Bạn đã chuyển sang danh sách vật tư'),
+                                                      duration: const Duration(
+                                                          seconds: 3),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
                                             ]),
                                             subtitle: Column(
                                               children: [
-                                                Text(myList[index]["date"]),
                                                 Row(children: [
                                                   Text('Mã đơn:   '),
                                                   Expanded(
