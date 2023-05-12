@@ -25,6 +25,7 @@ class _danhsachdieuchuyenState extends State<danhsachdieuchuyen> {
   String tempPickingId;
   double qty;
   double value;
+  int productId;
   TextEditingController _textController = TextEditingController();
 
   int index;
@@ -57,7 +58,10 @@ class _danhsachdieuchuyenState extends State<danhsachdieuchuyen> {
     http.Response response = await http.get(_uri, headers: headers);
     if (response.statusCode == 200) {
       dynamic myMap = json.decode(response.body)["result"];
-      myList = myMap;
+      filteredList = myMap;
+      myList = filteredList
+          .where((element) => element['picking_id'][0] == tempPickingId)
+          .toList();
       // danhsachdieuchuyenList = myList.map((item) => item["barcode"]).toList();
       print("namnm06 ${_uri}");
       print("tempPickingId ${tempPickingId}");
@@ -80,7 +84,7 @@ class _danhsachdieuchuyenState extends State<danhsachdieuchuyen> {
         "Authorization": basicAuth,
       };
       Uri _uri = Uri.parse(
-          'http://13.213.133.99/api/v1/write/stock.move?db=demo&ids=["${ids}"]&values={ "product_uom_qty": ${product_uom_qty}}&with_context={}&with_company=1');
+          'http://13.213.133.99/api/v1/write/stock.move?db=demo&ids=["${ids}"]&values={ "product_uom_qty": ${product_uom_qty},"quantity_done": ${product_uom_qty}}&with_context={}&with_company=1');
 
       http.Response response = await http.put(_uri, headers: headers);
       print(response.statusCode);
@@ -90,6 +94,28 @@ class _danhsachdieuchuyenState extends State<danhsachdieuchuyen> {
       print(error);
     }
   }
+
+  //  Future<void> putKho(int ids, double product_uom_qty) async {
+  //   try {
+  //     String username = 'nammta@gmail.com';
+  //     String password = '123456';
+  //     String basicAuth =
+  //         'Basic ' + base64Encode(utf8.encode('$username:$password'));
+  //     var headers = {
+  //       "Accept": "application/json",
+  //       "Authorization": basicAuth,
+  //     };
+  //     Uri _uri = Uri.parse(
+  //         'http://13.213.133.99/api/v1/write/stock.move?db=demo&ids=["${ids}"]&values={ "product_uom_qty": ${product_uom_qty},"quantity_done": ${product_uom_qty}}&with_context={}&with_company=1');
+
+  //     http.Response response = await http.put(_uri, headers: headers);
+  //     print(response.statusCode);
+  //     print(response.body);
+  //     print("namnm06_2 ${_uri}");
+  //   } catch (error) {
+  //     print(error);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -115,12 +141,12 @@ class _danhsachdieuchuyenState extends State<danhsachdieuchuyen> {
                             physics: NeverScrollableScrollPhysics(),
                             itemCount: myList.length,
                             itemBuilder: (BuildContext context, int index) {
-                              if (!myList[index]["picking_id"]
-                                  .toString()
-                                  .toLowerCase()
-                                  .contains(tempPickingId.toLowerCase())) {
-                                return SizedBox.shrink();
-                              }
+                              // if (!myList[index]["picking_id"]
+                              //     .toString()
+                              //     .toLowerCase()
+                              //     .contains(tempPickingId.toLowerCase())) {
+                              //   return SizedBox.shrink();
+                              // }
                               return InkWell(
                                   child: Card(
                                       // leading: CircleAvatar(

@@ -131,7 +131,8 @@ class _timkiemthietbiState extends State<timkiemthietbi> {
                                               Text('Mã nội bộ: '),
                                               Expanded(
                                                 child: Text(
-                                                  myList[index]["default_code"]
+                                                  filteredList[index]
+                                                          ["default_code"]
                                                       .toString(),
                                                   style: TextStyle(
                                                     fontSize: 16,
@@ -147,7 +148,8 @@ class _timkiemthietbiState extends State<timkiemthietbi> {
                                               Text('Mã hàng hóa: '),
                                               Expanded(
                                                 child: Text(
-                                                  myList[index]["x_ma_hang"]
+                                                  filteredList[index]
+                                                          ["x_ma_hang"]
                                                       .toString(),
                                                   style: TextStyle(
                                                     fontSize: 16,
@@ -248,7 +250,8 @@ class _timkiemthietbiState extends State<timkiemthietbi> {
                                             children: [
                                               Text('Trong kho: '),
                                               Text(
-                                                  myList[index]["qty_available"]
+                                                  filteredList[index]
+                                                          ["qty_available"]
                                                       .toString()
                                                       .split(".")[0],
                                                   style: TextStyle(

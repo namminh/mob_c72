@@ -355,7 +355,7 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                     value: icheck_nguon[index],
                                                     onChanged: (bool newValue) {
                                                       setState(() {
-                                                        if (newValue != null) {
+                                                        if (newValue) {
                                                           icheck_nguon[index] =
                                                               newValue;
                                                           putTrangThai(
@@ -366,6 +366,8 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                           S_icheck_nguon[
                                                               index] = "Đạt";
                                                         } else {
+                                                          icheck_nguon[index] =
+                                                              newValue;
                                                           putTrangThai(
                                                               myList[index]
                                                                   ["id"],
@@ -434,7 +436,7 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                     value: icheck_ngoai[index],
                                                     onChanged: (bool newValue) {
                                                       setState(() {
-                                                        if (newValue != null) {
+                                                        if (newValue) {
                                                           icheck_ngoai[index] =
                                                               newValue;
                                                           putTrangThai(
@@ -445,6 +447,8 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                           S_icheck_ngoai[
                                                               index] = "Đạt";
                                                         } else {
+                                                          icheck_ngoai[index] =
+                                                              newValue;
                                                           putTrangThai(
                                                               myList[index]
                                                                   ["id"],
@@ -513,7 +517,7 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                     value: icheck_ket[index],
                                                     onChanged: (bool newValue) {
                                                       setState(() {
-                                                        if (newValue != null) {
+                                                        if (newValue) {
                                                           icheck_ket[index] =
                                                               newValue;
                                                           putTrangThai(
@@ -524,6 +528,8 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                           S_icheck_ket[index] =
                                                               "Đạt";
                                                         } else {
+                                                          icheck_ket[index] =
+                                                              newValue;
                                                           putTrangThai(
                                                               myList[index]
                                                                   ["id"],
@@ -592,7 +598,7 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                     value: icheck_nang[index],
                                                     onChanged: (bool newValue) {
                                                       setState(() {
-                                                        if (newValue != null) {
+                                                        if (newValue) {
                                                           icheck_nang[index] =
                                                               newValue;
                                                           putTrangThai(
@@ -603,6 +609,8 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                           S_icheck_nang[index] =
                                                               "Đạt";
                                                         } else {
+                                                          icheck_nang[index] =
+                                                              newValue;
                                                           putTrangThai(
                                                               myList[index]
                                                                   ["id"],
@@ -673,7 +681,7 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                     value: icheck_hien[index],
                                                     onChanged: (bool newValue) {
                                                       setState(() {
-                                                        if (newValue != null) {
+                                                        if (newValue) {
                                                           icheck_hien[index] =
                                                               newValue;
                                                           putTrangThai(
@@ -684,6 +692,8 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                           S_icheck_hien[index] =
                                                               "Đạt";
                                                         } else {
+                                                          icheck_hien[index] =
+                                                              newValue;
                                                           putTrangThai(
                                                               myList[index]
                                                                   ["id"],
@@ -752,7 +762,7 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                     value: icheck_cap[index],
                                                     onChanged: (bool newValue) {
                                                       setState(() {
-                                                        if (newValue != null) {
+                                                        if (newValue) {
                                                           icheck_cap[index] =
                                                               newValue;
                                                           putTrangThai(
@@ -763,6 +773,8 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                           S_icheck_cap[index] =
                                                               "Đạt";
                                                         } else {
+                                                          icheck_cap[index] =
+                                                              newValue;
                                                           putTrangThai(
                                                               myList[index]
                                                                   ["id"],
@@ -831,7 +843,7 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                     value: icheck_bang[index],
                                                     onChanged: (bool newValue) {
                                                       setState(() {
-                                                        if (newValue != null) {
+                                                        if (newValue) {
                                                           icheck_bang[index] =
                                                               newValue;
                                                           putTrangThai(
@@ -842,6 +854,8 @@ class _hoatdongbaotriState extends State<hoatdongbaotri> {
                                                           S_icheck_bang[index] =
                                                               "Đạt";
                                                         } else {
+                                                          icheck_bang[index] =
+                                                              newValue;
                                                           putTrangThai(
                                                               myList[index]
                                                                   ["id"],

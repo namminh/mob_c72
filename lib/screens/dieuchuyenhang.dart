@@ -180,7 +180,7 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
     }
   }
 
-  Future<void> postXuatHang() async {
+  Future<void> postXuatHang(String x_so_hoa_don) async {
     try {
       String username = 'nammta@gmail.com';
       String password = '123456';
@@ -191,7 +191,7 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
         "Authorization": basicAuth,
       };
       Uri _uri = Uri.parse(
-          'http://13.213.133.99/api/v1/create/stock.picking?db=demo&values={"picking_type_id":2,"move_type":"direct","location_id":"8","location_dest_id":"5","company_id":"1","state":"draft"}');
+          'http://13.213.133.99/api/v1/create/stock.picking?db=demo&values={"picking_type_id":2,"move_type":"direct","location_id":"8","location_dest_id":"5","company_id":"1","state":"draft","x_so_hoa_don":"${x_so_hoa_don}"}');
 
       http.Response response = await http.post(_uri, headers: headers);
       print(response.statusCode);
@@ -287,7 +287,7 @@ class _dieuchuyenhangState extends State<dieuchuyenhang> {
                           ),
                           ElevatedButton(
                             onPressed: () async {
-                              await postXuatHang();
+                              await postXuatHang(NoiDung);
                               setState(() {
                                 getDatadieuchuyenhang();
                               });

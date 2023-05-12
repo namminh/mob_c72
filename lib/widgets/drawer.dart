@@ -10,6 +10,7 @@ import 'package:mob_vietduc/screens/dieuchuyenhang.dart';
 import 'package:mob_vietduc/screens/yeucaubaotri.dart';
 import 'package:mob_vietduc/screens/thietbi.dart';
 import 'package:mob_vietduc/screens/baotri.dart';
+import 'package:mob_vietduc/screens/register.dart';
 
 class ArgonDrawer extends StatelessWidget {
   final String currentPage;
@@ -61,7 +62,7 @@ class ArgonDrawer extends StatelessWidget {
                       );
                   },
                   iconColor: ArgonColors.primary,
-                  title: "Thiết bị",
+                  title: "Vật tư",
                   isSelected: currentPage == "thietbi" ? true : false),
               DrawerTile(
                   icon: Icons.manage_history_rounded,
@@ -166,12 +167,17 @@ class ArgonDrawer extends StatelessWidget {
                   DrawerTile(
                       icon: Icons.pie_chart,
                       onTap: () {
-                        if (currentPage != "register")
-                          Navigator.pushReplacementNamed(context, '/register');
+                        if (currentPage != "Register")
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Register(),
+                            ),
+                          );
                       },
                       iconColor: ArgonColors.warning,
                       title: "Thoát",
-                      isSelected: currentPage == "register" ? true : false),
+                      isSelected: currentPage == "Register" ? true : false),
                 ],
               )),
         ),

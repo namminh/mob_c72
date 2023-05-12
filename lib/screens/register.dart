@@ -1,18 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:mob_vietduc/constants/Theme.dart';
 import 'package:mob_vietduc/screens/scanqr.dart';
-import 'package:mob_vietduc/screens/yeucaubaotri.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //widgets
-import 'package:mob_vietduc/widgets/navbar.dart';
-import 'package:mob_vietduc/widgets/input.dart';
-
-import 'package:mob_vietduc/widgets/drawer.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -90,6 +83,7 @@ class _RegisterState extends State<Register> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(
@@ -160,10 +154,8 @@ class _RegisterState extends State<Register> {
                                     child: Center(
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          setState(() {
-                                            username = _textControllerUser.text;
-                                            password = _textControllerPass.text;
-                                          });
+                                          username = _textControllerUser.text;
+                                          password = _textControllerPass.text;
                                           checklogin(username, password);
                                         },
                                         style: ElevatedButton.styleFrom(
